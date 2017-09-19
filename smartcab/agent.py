@@ -101,8 +101,7 @@ class LearningAgent(Agent):
             print "random move"
             action = random.choice(self.valid_actions)
         else:
-            q_vals = dict((v, k) for (k, v) in self.Q[state].items())
-            action = q_vals[max(q_vals.keys())]
+            action = self.get_maxQ(state)
         return action
 
 
@@ -111,7 +110,8 @@ class LearningAgent(Agent):
             receives an award. This function does not consider future rewards 
             when conducting learning. """
 
-        if self.alpha != 0:
+        # if self.alpha != 0:
+        if self.learning:
             self.Q[state][action] = (1 - self.alpha) * self.Q[state][action] + self.alpha * reward
         return
 
@@ -148,7 +148,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=False)
+    agent = env.create_agent(LearningAgent, learning=True)
     
     ##############
     # Follow the driving agent
@@ -164,14 +164,14 @@ def run():
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
     # sim = Simulator(env, update_delay=1, log_metrics=False)
-    sim = Simulator(env, update_delay=20, log_metrics=True, display=True, optimized=False)
+    sim = Simulator(env, update_delay=0.01, log_metrics=True, display=True, optimized=True)
 
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=10)
+    sim.run(n_test=100)
 
 
 if __name__ == '__main__':
