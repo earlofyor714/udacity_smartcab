@@ -68,8 +68,8 @@ class LearningAgent(Agent):
         # Calculate the maximum Q-value of all actions for a given state
 
         q_vals = dict((v, k) for (k, v) in self.Q[state].items())
-        maxQ = q_vals[max(q_vals.keys())]
-
+        # maxQ = q_vals[max(q_vals.keys())]
+        maxQ = max(q_vals.keys())
         return maxQ 
 
 
@@ -79,7 +79,7 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
-        if state not in self.Q.keys():
+        if self.learning and state not in self.Q.keys():
             self.Q[state] = dict(zip(self.valid_actions, [0.0, 0.0, 0.0, 0.0]))
         return
 
@@ -101,7 +101,13 @@ class LearningAgent(Agent):
             print "random move"
             action = random.choice(self.valid_actions)
         else:
-            action = self.get_maxQ(state)
+            # action = self.get_maxQ(state)
+            max_actions = []
+            maxQ = self.get_maxQ(state)
+            for (k, v) in self.Q[state].items():
+                if v == maxQ:
+                    max_actions.append(k)
+            action = random.choice(max_actions)
         return action
 
 
@@ -110,7 +116,6 @@ class LearningAgent(Agent):
             receives an award. This function does not consider future rewards 
             when conducting learning. """
 
-        # if self.alpha != 0:
         if self.learning:
             self.Q[state][action] = (1 - self.alpha) * self.Q[state][action] + self.alpha * reward
         return
